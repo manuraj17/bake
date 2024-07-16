@@ -39,7 +39,7 @@ REPOSITORY_URL="your-repo-url" # e.g., https://github.com/yourusername/yourrepo.
 TEMP_DIR=$(mktemp -d)
 
 # Clone the repository into a temporary directory
-git clone $REPOSITORY_URL "$TEMP_DIR"
+git clone $REPOSITORY_URL "$TEMP_DIR" --depth 1
 
 # Navigate to the temporary directory
 cd "$TEMP_DIR" || exit
