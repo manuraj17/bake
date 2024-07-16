@@ -36,6 +36,7 @@ AWS_REGION="your-aws-region"                   # e.g., us-west-2
 ECR_REPOSITORY_NAME="your-ecr-repository-name" # e.g., my-ecr-repo
 AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
 REPOSITORY_URL="your-repo-url" # e.g., https://github.com/yourusername/yourrepo.git
+IMAGE_NAME="image-name"
 TEMP_DIR=$(mktemp -d)
 
 # Clone the repository into a temporary directory
@@ -57,13 +58,13 @@ commit_hash=$(git rev-parse --short HEAD)
 tag="$current_date.$commit_hash"
 
 # Build the Docker image with the tag and creation date label
-docker build -t "myimage:$tag" .
+docker build -t "$IMAGE_NAME:$tag" .
 
 # Authenticate Docker to AWS ECR
 aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com"
 
 # Tag the Docker image with the ECR repository URI
-docker tag "myimage:$tag" "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$tag"
+docker tag "$IMAGE_NAME:$tag" "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$tag"
 
 # Push the Docker image to the ECR repository
 docker push "$AWS_ACCOUNT_ID.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY_NAME:$tag"
